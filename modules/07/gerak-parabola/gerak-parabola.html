@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parabolic Motion</title>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 25px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .plot {
+      display: flex;
+      gap: 10px;
+      margin: 25px 0;
+      min-height: 250px;
+    }
+
+    .console {
+      flex: 1;
+      min-width: 180px;
+      height: 250px;
+      overflow: auto;
+      border: 1px solid #ccc;
+    }
+
+    .console h3 {
+      margin: 0;
+      padding: 8px;
+      background: #ddd;
+      font-size: 14px;
+    }
+
+    pre {
+      padding: 8px;
+      font-size: 12px;
+    }
+
+    .chart {
+      flex: 2;
+      min-width: 0;
+      height: 250px;
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+
+    @media (max-width: 600px) {
+      .plot {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Parabolic Motion</h1>
+
+  <h2>Equations of Motion</h2>
+
+  <p>x(t) = x₀ + v₀ₓt + ½aₓt²</p>
+  <p>y(t) = y₀ + v₀ᵧt + ½aᵧt²</p>
+  <p>
+    y(x) = y₀ + (v₀ᵧ/v₀ₓ)(x − x₀)
+    + aᵧ(x − x₀)²/(2v₀ₓ²), when aₓ = 0
+  </p>
+
+  <div id="plots"></div>
+
+  <script>
+    /*
+      Parameters
+    */
+
+    const x0 = 0;
+    const y0 = 0;
+    const v0x = 20;
+    const v0y = 40;
+    const ax = 0;
+    const ay = -10;
+
+    const tbeg = 0;
+    const tend = 8;
+    const dt = 0.1;
+
+    /*
+      Data
+    */
+
+    const dataXT = [];
+    const dataYT = [];
+    const dataXY = [];
+
+    const n = Math.round((tend - tbeg) / dt);
+
+    for (let i = 0; i <= n; i++) {
+      const t = tbeg + i * dt;
+
+      const x = x0 + v0x * t + 0.5 * ax * t * t;
+      const y = y0 + v0y * t + 0.5 * ay * t * t;
+
+      dataXT.push({ x: t, y: x });
+      dataYT.push({ x: t, y: y });
+      dataXY.push({ x: x, y: y });
+    }
+
+    /*
+      Plot configurations
+    */
+
+    const plots = [
+      {
+        id: "xt",
+        name: "data x-t",
+        data: dataXT,
+        xlabel: "Time, t (s)",
+        ylabel: "Horizontal position, x (m)"
+      },
+      {
+        id: "yt",
+        name: "data y-t",
+        data: dataYT,
+        xlabel: "Time, t (s)",
+        ylabel: "Vertical position, y (m)"
+      },
+      {
+        id: "xy",
+        name: "data x-y",
+        data: dataXY,
+        xlabel: "Horizontal position, x (m)",
+        ylabel: "Vertical position, y (m)"
+      }
+    ];
+
+    /*
+      Output to console and Chart.js
+    */
+
+    const container = document.getElementById("plots");
+
+    plots.forEach((p) => {
+      const section = document.createElement("div");
+      section.className = "plot";
+
+      const consoleBox = document.createElement("div");
+      consoleBox.className = "console";
+
+      const title = document.createElement("h3");
+      title.textContent = p.name;
+
+      const pre = document.createElement("pre");
+      pre.textContent =
+        "x\t y\n" +
+        p.data.map(point =>
+          point.x.toFixed(2) + "\t" + point.y.toFixed(2)
+        ).join("\n");
+
+      consoleBox.append(title, pre);
+
+      const chartBox = document.createElement("div");
+      chartBox.className = "chart";
+
+      const canvas = document.createElement("canvas");
+      chartBox.appendChild(canvas);
+
+      section.append(consoleBox, chartBox);
+      container.appendChild(section);
+
+      const config = {
+        type: "scatter",
+
+        data: {
+          datasets: [{
+            label: p.name,
+            data: p.data,
+            showLine: true,
+            pointRadius: 3,
+            hoverRadius: 5
+          }]
+        },
+
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+
+          scales: {
+            x: {
+              type: "linear",
+              title: {
+                display: true,
+                text: p.xlabel
+              }
+            },
+
+            y: {
+              type: "linear",
+              title: {
+                display: true,
+                text: p.ylabel
+              }
+            }
+          }
+        }
+      };
+
+      new Chart(canvas, config);
+    });
+  </script>
+</body>
+</html>
