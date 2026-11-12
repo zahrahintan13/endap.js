@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Numbers Generator</title>
+</head>
+<body>
+
+    <div id="cnt"></div>
+
+    <script>
+        // Get parent element
+        const cnt = document.getElementById("cnt");
+
+        // Create textarea
+        const textarea = document.createElement("textarea");
+        textarea.rows = 10;
+        textarea.cols = 30;
+        textarea.placeholder = "Generated numbers will appear here...";
+        cnt.appendChild(textarea);
+
+        // Create Generate button
+        const generateBtn = document.createElement("button");
+        generateBtn.textContent = "generate";
+        cnt.appendChild(generateBtn);
+
+        // Create Clear button
+        const clearBtn = document.createElement("button");
+        clearBtn.textContent = "clear";
+        cnt.appendChild(clearBtn);
+
+        // Generate 100 random two-digit numbers
+        generateBtn.addEventListener("click", () => {
+            const numbers = [];
+
+            for (let i = 0; i < 100; i++) {
+                const randomNumber = Math.floor(Math.random() * 100);
+                numbers.push(String(randomNumber).padStart(2, "0"));
+            }
+
+            textarea.value = numbers.join(", ");
+        });
+
+        // Clear textarea
+        clearBtn.addEventListener("click", () => {
+            textarea.value = "";
+        });
+    </script>
+
+</body>
+</html>
